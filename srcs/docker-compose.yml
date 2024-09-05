@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 services:
   nginx:
@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: requirements/nginx/Dockerfile
     container_name: nginx
-    depends_on:
-      wordpress:
-        condition: service_healthy
+#    depends_on:
+#      wordpress:
+#        condition: service_healthy
     ports:
       - "443:443"
     volumes:
