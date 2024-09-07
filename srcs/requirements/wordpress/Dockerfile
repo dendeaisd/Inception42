@@ -4,19 +4,19 @@ ARG DB_NAME \
     DB_USER \
     DB_PASS
 RUN apk update && apk upgrade && apk add --no-cache \
-    php8.2 \
-    php8.2-fpm \
-    php8.2-mysqli \
-    php8.2-json \
-    php8.2-curl \
-    php8.2-dom \
-    php8.2-exif \
-    php8.2-fileinfo \
-    php8.2-mbstring \
-    php8.2-openssl \
-    php8.2-xml \
-    php8.2-zip \
-    php8.2-redis \
+    php \
+    php-fpm \
+    php-mysqli \
+    php-json \
+    php-curl \
+    php-dom \
+    php-exif \
+    php-fileinfo \
+    php-mbstring \
+    php-openssl \
+    php-xml \
+    php-zip \
+    php-redis \
     wget \
     unzip && \
     find / -name "www.conf" && \
