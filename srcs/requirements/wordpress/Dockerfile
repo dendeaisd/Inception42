@@ -12,29 +12,24 @@ RUN apt-get update && apt-get install -y \
     php7.4-mbstring \
     php7.4-xml \
     php7.4-zip \
-    php-redis \
     wget \
     unzip \
     && apt-get clean
 
-RUN sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" /etc/php/7.4/fpm/pool.d/www.conf \
-    && sed -i "s|;listen.owner = www-data|listen.owner = www-data|g" /etc/php/7.4/fpm/pool.d/www.conf \
-    && sed -i "s|;listen.group = www-data|listen.group = www-data|g" /etc/php/7.4/fpm/pool.d/www.conf
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
 
-WORKDIR /var/www
+COPY ./conf/www.conf /etc/php/7.3/fpm/pool.d/
 
-RUN wget https://wordpress.org/latest.zip && \
-    unzip latest.zip && \
-    cp -rf wordpress/* . && \
-    rm -rf wordpress latest.zip
+RUN mkdir /run/php
 
-# Copy custom WordPress configuration script
-COPY ./requirements/wordpress/conf/wp-config-create.sh .
+COPY ./tools/create_wordpress.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/create_wordpress.sh
+ENTRYPOINT ["/usr/local/bin/create_wordpress.sh"]
 
-# Run the configuration script and set proper permissions
-RUN sh wp-config-create.sh && rm wp-config-create.sh && \
-    chmod -R 0777 wp-content/
+WORKDIR /var/www/html/
 
 EXPOSE 9000
 
-CMD ["php-fpm7.4", "-F", "-R"]
+CMD ["/usr/sbin/php-fpm7.3", "-F"]
