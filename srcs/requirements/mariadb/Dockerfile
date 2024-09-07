@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.19
 
 ARG DB_NAME \
     DB_USER \
@@ -23,4 +23,4 @@ EXPOSE 3306
 COPY requirements/mariadb/conf/init_db.sh .
 RUN sh init_db.sh && rm init_db.sh
 USER mysql
-CMD ["/usr/bin/mysqld", "--skip-log-error"]
+CMD ["/usr/bin/mysqld", "--skip-log-error --verbose"]

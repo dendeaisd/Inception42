@@ -10,6 +10,8 @@ services:
       - wordpress
     ports:
       - "443:443"
+    networks:
+      - inception
     volumes:
       - ./requirements/nginx/conf/:/etc/nginx/http.d/
       - ./requirements/nginx/tools:/etc/nginx/ssl/
@@ -50,8 +52,8 @@ services:
       WORDPRESS_DB_USER: ${DB_USER}
       WORDPRESS_DB_PASSWORD: ${DB_PASS}
       WORDPRESS_DB_HOST: mariadb:3306
-    ports:
-      - "80:80"
+    expose:
+      - "9000"
     networks:
       - inception
     volumes:
@@ -62,12 +64,12 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/data/wordpress
+      device: /home/fvoicu/data/wordpress
   db-volume:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/data/mariadb
+      device: /home/fvoicu/data/mariadb
 
 networks:
   inception:
