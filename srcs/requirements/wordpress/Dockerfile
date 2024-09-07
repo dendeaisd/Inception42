@@ -1,6 +1,9 @@
 FROM debian:bullseye-slim
 
 RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    bash \
     php7.4 \
     php7.4-fpm \
     php7.4-mysqli \
@@ -12,9 +15,6 @@ RUN apt-get update && apt-get install -y \
     php7.4-mbstring \
     php7.4-xml \
     php7.4-zip \
-    wget \
-    unzip \
-    curl \
     && apt-get clean
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
