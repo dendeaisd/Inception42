@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     php7.4-zip \
     wget \
     unzip \
+    curl \
     && apt-get clean
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
