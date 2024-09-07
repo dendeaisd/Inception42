@@ -21,7 +21,7 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
 
-COPY .srcs/requirements/wordpress/conf/www.conf /etc/php/7.3/fpm/pool.d/
+COPY ./srcs/requirements/wordpress/conf/www.conf /etc/php/7.3/fpm/pool.d/
 
 RUN mkdir /run/php
 
