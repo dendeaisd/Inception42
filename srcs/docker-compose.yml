@@ -1,23 +1,6 @@
 version: '3.9'
 
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: requirements/nginx/Dockerfile
-    container_name: nginx
-    depends_on:
-      - wordpress
-    ports:
-      - "443:443"
-    networks:
-      - inception
-    volumes:
-      - ./requirements/nginx/conf/:/etc/nginx/http.d/
-      - ./requirements/nginx/tools:/etc/nginx/ssl/
-      - /home/${USER}/simple_docker_nginx_html/public/html:/var/www/
-    restart: always
-
   mariadb:
     build:
       context: .
@@ -32,21 +15,25 @@ services:
       - "3306:3306"
     volumes:
       - db-volume:/var/lib/mysql
+    networks:
+      - inception
     restart: always
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   wordpress:
     build:
       context: .
       dockerfile: requirements/wordpress/Dockerfile
-      args:
-        DB_NAME: ${DB_NAME}
-        DB_USER: ${DB_USER}
-        DB_PASS: ${DB_PASS}
     container_name: wordpress
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     environment:
       WORDPRESS_DB_NAME: ${DB_NAME}
       WORDPRESS_DB_USER: ${DB_USER}
@@ -58,18 +45,38 @@ services:
       - inception
     volumes:
       - wp-volume:/var/www/
+    env_file:
+      - .env
+
+  nginx:
+    build:
+      context: .
+      dockerfile: requirements/nginx/Dockerfile
+    container_name: nginx
+    depends_on:
+      wordpress:
+        condition: service_started
+    ports:
+      - "443:443"
+    networks:
+      - inception
+    volumes:
+      - ./requirements/nginx/conf/:/etc/nginx/http.d/
+      - ./requirements/nginx/tools:/etc/nginx/ssl/
+      - /home/${USER}/simple_docker_nginx_html/public/html:/var/www/
+    restart: always
 
 volumes:
-  wp-volume:
-    driver_opts:
-      o: bind
-      type: none
-      device: /home/fvoicu/data/wordpress
   db-volume:
     driver_opts:
       o: bind
       type: none
       device: /home/fvoicu/data/mariadb
+  wp-volume:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/fvoicu/data/wordpress
 
 networks:
   inception:
