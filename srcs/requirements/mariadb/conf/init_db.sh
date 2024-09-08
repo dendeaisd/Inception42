@@ -1,57 +1,37 @@
 #!/bin/sh
 
-# Ensure MySQL directory is properly owned by the mysql user
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "Initializing MySQL data directory..."
-    
-    # Ensure the ownership of the MySQL directory is correct
-    chown -R mysql:mysql /var/lib/mysql
+# Debugging output
+echo "MYSQL_DATABASE: $MYSQL_DATABASE"
+echo "MYSQL_USER: $MYSQL_USER"
+echo "MYSQL_PASSWORD: $MYSQL_PASSWORD"
+echo "MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD"
 
-    # Initialize the MySQL data directory
-    mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm
+DB_DIR=/tmp/create_db.sql
 
-    # Temporary file for further checks
-    tfile=$(mktemp)
-    if [ ! -f "$tfile" ]; then
-        echo "Temporary file creation failed. Exiting."
-        exit 1
-    fi
+# Check if any variables are empty
+if [ -z "$MYSQL_DATABASE" ] || [ -z "$MYSQL_USER" ] || [ -z "$MYSQL_PASSWORD" ] || [ -z "$MYSQL_ROOT_PASSWORD" ]; then
+  echo "One or more environment variables are missing"
+  exit 1
 fi
 
-# Check if the WordPress database already exists
-if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
-    echo "Creating the WordPress database and setting up users..."
+# Create the SQL commands
+echo "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"                        > $DB_DIR
+echo "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';" >> $DB_DIR
+echo "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';"          >> $DB_DIR
+echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';"        >> $DB_DIR
+echo "FLUSH PRIVILEGES;"                                              >> $DB_DIR
 
-    # Create SQL file for initializing the database
-    cat << EOF > /tmp/create_db.sql
-USE mysql;
-FLUSH PRIVILEGES;
+# Start MariaDB in safe mode to run the initial SQL commands
+mariadbd --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/run/mysqld/mysqld.sock &
 
-# Remove unnecessary users and test databases
-DELETE FROM mysql.user WHERE User='';
-DROP DATABASE IF EXISTS test;
-DELETE FROM mysql.db WHERE Db='test';
-DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+# Wait for MariaDB to start
+sleep 5
 
-# Set root password
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT}';
+# Run the SQL commands from the SQL file
+mysql -u root --socket=/run/mysqld/mysqld.sock < $DB_DIR
 
-# Create WordPress database and user
-CREATE DATABASE ${DB_NAME} CHARACTER SET utf8 COLLATE utf8_general_ci;
-CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+# Stop MariaDB
+mysqladmin -u root -p $MYSQL_ROOT_PASSWORD --socket=/run/mysqld/mysqld.sock shutdown
 
-# Apply changes
-FLUSH PRIVILEGES;
-EOF
-
-    # Run the SQL script
-    /usr/bin/mysqld --user=mysql --bootstrap < /tmp/create_db.sql
-
-    # Clean up the SQL script
-    rm -f /tmp/create_db.sql
-else
-    echo "Database ${DB_NAME} already exists, skipping creation."
-fi
-
-echo "MySQL and WordPress database setup complete."
+# Start MariaDB with network access enabled
+mariadbd --user=mysql --bind-address=0.0.0.0
