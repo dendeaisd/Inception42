@@ -28,10 +28,10 @@ mariadbd --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/run/m
 sleep 5
 
 # Run the SQL commands from the SQL file
-mysql -u root --socket=/run/mysqld/mysqld.sock < $DB_DIR
+mysql -u root --password="$MYSQL_ROOT_PASSWORD" --socket=/run/mysqld/mysqld.sock < $DB_DIR
 
 # Stop MariaDB
-mysqladmin -u root -p $MYSQL_ROOT_PASSWORD --socket=/run/mysqld/mysqld.sock shutdown
+mysqladmin -u root --password="$MYSQL_ROOT_PASSWORD" --socket=/run/mysqld/mysqld.sock shutdown
 
 # Start MariaDB with network access enabled
 mariadbd --user=mysql --bind-address=0.0.0.0
