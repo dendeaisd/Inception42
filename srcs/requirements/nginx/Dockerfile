@@ -1,4 +1,3 @@
-# Use the alpine linux 3.19 image as the base image
 FROM	alpine:3.19
 
 RUN	apk update && \ 

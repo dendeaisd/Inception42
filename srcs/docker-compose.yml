@@ -12,8 +12,6 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT}
-    ports:
-      - "3306:3306"
     volumes:
       - db-volume:/var/lib/mysql
     networks:
@@ -46,8 +44,6 @@ services:
       WP_ADMIN_PASS: big_pass
       WP_ADMIN_MAIL: big_user@example.com
       WP_MAIL: random_user@example.com
-    ports:
-      - "9000:9000"
     networks:
       - inception
     volumes:
