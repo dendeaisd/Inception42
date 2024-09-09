@@ -25,13 +25,15 @@ echo "FLUSH PRIVILEGES;"                                              >> $DB_DIR
 mariadbd --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/run/mysqld/mysqld.sock &
 
 # Wait for MariaDB to start
-sleep 5
+until mysqladmin ping --socket=/run/mysqld/mysqld.sock --silent; do
+    sleep 1
+done
 
 # Run the SQL commands from the SQL file
-mysql -u root --password="$MYSQL_ROOT_PASSWORD" --socket=/run/mysqld/mysqld.sock < $DB_DIR
+mysql -u root --socket=/run/mysqld/mysqld.sock < $DB_DIR
 
 # Stop MariaDB
-mysqladmin -u root --password="$MYSQL_ROOT_PASSWORD" --socket=/run/mysqld/mysqld.sock shutdown
+mysqladmin -u root --password="$MYSQL_ROOT_PASSWORD"  --socket=/run/mysqld/mysqld.sock shutdown
 
 # Start MariaDB with network access enabled
 mariadbd --user=mysql --bind-address=0.0.0.0

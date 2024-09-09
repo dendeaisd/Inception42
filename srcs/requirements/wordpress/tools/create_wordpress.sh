@@ -23,10 +23,16 @@ install_wordpress() {
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASS" \
         --admin_email="$WP_ADMIN_MAIL" \
-        --allow-root; do
-    echo "Waiting for WordPress to be ready for installation..."
+        --allow-root
+  do
     sleep 1
   done
+  wp plugin update --all
+  # wp theme install twentysixteen --activate
+
+	# wp user create $WP_USER $WP_USER_EMAIL --role=editor --user_pass=$WP_USER_PWD
+  # wp post generate --count=5 --post_title="fvoicu"
+
 }
 
 create_wp_user() {

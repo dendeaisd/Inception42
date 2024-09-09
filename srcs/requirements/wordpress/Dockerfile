@@ -30,8 +30,7 @@ COPY requirements/wordpress/tools/create_wordpress.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/create_wordpress.sh
 
-
-WORKDIR /var/www/html/
+WORKDIR /var/www/wordpress/
 
 EXPOSE 9000
 

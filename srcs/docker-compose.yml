@@ -11,12 +11,14 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
     volumes:
       - db-volume:/var/lib/mysql
     networks:
       - inception
     restart: always
+    ports:
+      - 3306:3306
     env_file:
       - .env
     healthcheck:
@@ -36,11 +38,11 @@ services:
         condition: service_healthy
     environment:
       WORDPRESS_DB_NAME: ${DB_NAME}
-      WP_USER: ${DB_USER}
-      WP_PASSWORD: ${DB_PASS}
+      WP_USER: user
+      WP_PASS: pass
       WP_TITLE: fvoicu
       WP_HOST: fvoicu.42.fr
-      WP_ADMIN_USER: big_userr
+      WP_ADMIN_USER: big_user
       WP_ADMIN_PASS: big_pass
       WP_ADMIN_MAIL: big_user@example.com
       WP_MAIL: random_user@example.com
