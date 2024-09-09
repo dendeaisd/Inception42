@@ -27,12 +27,6 @@ install_wordpress() {
   do
     sleep 1
   done
-  wp plugin update --all
-  # wp theme install twentysixteen --activate
-
-	# wp user create $WP_USER $WP_USER_EMAIL --role=editor --user_pass=$WP_USER_PWD
-  # wp post generate --count=5 --post_title="fvoicu"
-
 }
 
 create_wp_user() {

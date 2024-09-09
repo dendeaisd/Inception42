@@ -31,7 +31,9 @@ fclean: clean
 		$(DOCKER) system prune --volumes --all --force
 		sudo rm -rf $(DATA_PATH)
 		$(DOCKER) network prune --force
-		docker volume rm $$(docker volume ls -q)
+		if [ -n "$$(docker volume ls -q)" ]; then \
+			docker volume rm $$(docker volume ls -q); \
+		fi
 		$(DOCKER) image prune --force
 
 re: fclean all

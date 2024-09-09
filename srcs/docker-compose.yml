@@ -38,14 +38,15 @@ services:
         condition: service_healthy
     environment:
       WORDPRESS_DB_NAME: ${DB_NAME}
-      WP_USER: user
-      WP_PASS: pass
-      WP_TITLE: fvoicu
-      WP_HOST: fvoicu.42.fr
-      WP_ADMIN_USER: big_user
-      WP_ADMIN_PASS: big_pass
-      WP_ADMIN_MAIL: big_user@example.com
-      WP_MAIL: random_user@example.com
+      WP_USER: ${WP_USER}
+      WP_PASS: ${WP_PASS}
+      WP_MAIL: ${WP_MAIL}
+      WP_TITLE: ${WP_TITLE}
+      WP_HOST: ${WP_HOST}
+      WP_ADMIN_USER: ${WP_ADM}
+      WP_ADMIN_PASS: ${WP_ADM_PASS}
+      WP_ADMIN_MAIL: ${WP_ADM_MAIL}
+     
     networks:
       - inception
     volumes:
