@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   mariadb:
-    image: mariadb
+    image: mariadb:eval
     build:
       context: .
       dockerfile: requirements/mariadb/Dockerfile
@@ -28,7 +28,7 @@ services:
       retries: 3
 
   wordpress:
-    image: wordpress
+    image: wordpress:eval
     build:
       context: .
       dockerfile: requirements/wordpress/Dockerfile
@@ -55,7 +55,7 @@ services:
       - .env
 
   nginx:
-    image: nginx
+    image: nginx:eval
     build:
       context: .
       dockerfile: requirements/nginx/Dockerfile
