@@ -1,5 +1,3 @@
 # Ignore environment variables file
 srcs/.env
 
-# Ignore secrets directory
-secrets/
