@@ -17,6 +17,10 @@ setup_wordpress() {
 
 install_wordpress() {
   echo "Installing WordPress..."
+
+  local max_retries=100
+  local attempt=1
+
   while ! wp core install \
         --title="$WP_TITLE" \
         --url="$WP_HOST" \
@@ -25,8 +29,16 @@ install_wordpress() {
         --admin_email="$WP_ADMIN_MAIL" \
         --allow-root
   do
+    if ["$attempt" -ge "$max_retries"]; then
+      echo "Failed to install WordPress after $attempt attempts."
+      return 1
+    fi
+    attempt=$((attempt + 1))
     sleep 1
   done
+  
+  echo "WordPress installed succesfully"
+  return 0
 }
 
 create_wp_user() {

@@ -10,7 +10,6 @@ all: build
 		sudo chmod 777 /etc/hosts
 		sudo chmod 777 /home/fvoicu/data/mariadb
 		sudo chmod 777 /home/fvoicu/data/wordpress
-
 		echo "127.0.0.1 fvoicu.42.fr" | sudo tee -a /etc/hosts
 		echo "127.0.0.1 www.fvoicu.42.fr" | sudo tee -a /etc/hosts
 		cd $(SRCS) && $(COMPOSE) up -d
