@@ -12,6 +12,7 @@ setup_wordpress() {
   sed -i "s/password_here/$DB_PASS/g" wp-config-sample.php
   sed -i "s/localhost/$DB_HOST/g" wp-config-sample.php
   sed -i "s/database_name_here/$DB_NAME/g" wp-config-sample.php
+
   cp wp-config-sample.php wp-config.php
 }
 
@@ -29,7 +30,7 @@ install_wordpress() {
         --admin_email="$WP_ADMIN_MAIL" \
         --allow-root
   do
-    if ["$attempt" -ge "$max_retries"]; then
+    if [ "$attempt" -ge "$max_retries" ]; then 
       echo "Failed to install WordPress after $attempt attempts."
       return 1
     fi
@@ -69,6 +70,24 @@ check_wordpress_users() {
   echo "User validation passed."
 }
 
+enable_redis_cache() {
+  echo "Installing and enabling Redis cache plugin..."
+	wp config set WP_REDIS_HOST redis --allow-root
+  wp config set WP_REDIS_PORT 6379 --raw --allow-root
+ 	wp config set WP_CACHE_KEY_SALT $WP_HOST --allow-root
+ 	wp config set WP_REDIS_CLIENT phpredis --allow-root
+
+  wp theme install astra --activate --allow-root
+  wp plugin update --all --allow-root
+  wp post generate --count=5 --post_title="fvoicu" --allow-root
+  
+  wp plugin install redis-cache --activate --allow-root
+  wp redis enable --allow-root
+  
+  echo "Redis cache enabled."
+}
+
+
 if [ -f ./wp-config.php ]; then
   echo "WordPress already downloaded."
 else
@@ -78,5 +97,7 @@ fi
 install_wordpress
 create_wp_user
 check_wordpress_users
+enable_redis_cache
+
 
 exec "$@"

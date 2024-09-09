@@ -71,6 +71,27 @@ services:
       - wp-volume:/var/www/wordpress
     restart: always
 
+##..::BONUS::..
+  redis:
+    image: redis:eval
+    build:
+      context: .
+      dockerfile: requirements/bonus/redis/Dockerfile
+    container_name: redis
+    depends_on:
+      wordpress:
+        condition: service_started
+    # ports:
+    #   - '6379:6379'
+    networks:
+      - inception
+    volumes:
+      - wp-volume:/var/www/worpress
+    env_file:
+      - .env
+
+
+
 volumes:
   db-volume:
     driver_opts:
